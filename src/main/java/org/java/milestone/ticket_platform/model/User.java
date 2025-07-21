@@ -3,8 +3,6 @@ package org.java.milestone.ticket_platform.model;
 import java.util.List;
 import java.util.Set;
 
-import javax.management.relation.Role;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -25,6 +25,7 @@ public class Role {
     private String name;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    private Set<User> users;
 
     public Integer getId() {
         return this.id;
@@ -49,5 +50,4 @@ public class Role {
     public void setUsers(Set<User> users) {
         this.users = users;
     }
-    private Set<User> users;
 }
