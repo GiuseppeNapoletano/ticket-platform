@@ -1,6 +1,8 @@
 package org.java.milestone.ticket_platform.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,8 +29,9 @@ public class Ticket {
     @Size(min = 1, message = "Descrition must have at least one character")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @NotNull(message = "Tickets must have a status")
-    private String status;
+    private TicketStatus status;
 
     @ManyToOne
     @JoinColumn(name = "categories_id", nullable = false)
@@ -37,6 +40,13 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public enum TicketStatus {
+        to_do,
+        in_progress,
+        done
+    }
+
 
     public Integer getId() {
         return this.id;
@@ -62,11 +72,11 @@ public class Ticket {
         this.description = description;
     }
 
-    public String getStatus() {
+    public TicketStatus getStatus() {
         return this.status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TicketStatus status) {
         this.status = status;
     }
 
@@ -85,6 +95,6 @@ public class Ticket {
     public void setUser(User user) {
         this.user = user;
     }
-
+    
 
 }

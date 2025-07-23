@@ -37,9 +37,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "The user's status cannot be null")
-    private Status status;
+    private UserStatus status;
 
-    public enum Status {
+    public enum UserStatus {
         Active,
         Non_active
     }
@@ -50,6 +50,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Ticket> tickets;
+
 
     public Integer getId() {
         return this.id;
@@ -83,11 +84,11 @@ public class User {
         this.email = email;
     }
 
-    public Status getStatus() {
+    public UserStatus getStatus() {
         return this.status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 
@@ -106,5 +107,6 @@ public class User {
     public void setTickets(List<Ticket> tickets) {
         this.tickets = tickets;
     }
+    
 
 }
