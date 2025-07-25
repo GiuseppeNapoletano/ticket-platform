@@ -1,10 +1,42 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/head :: head('Tickets')}" />
 <body>
-     <header>
-        <nav th:replace="~{fragments/navbar :: navbar('Tickets-platform')}" />
-    </header>
-    <h1>ENTRA NEL PORTALE</h1>
+    <th-block th:fragment="navbar(title)">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand">Boolean</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="user-details">
+                Logged user: <span sec:authentication="name" class="me-3"></span>
+                Roles: <span sec:authentication="principal.authorities" class="me-3"></span>
+                <a th:href="@{/logout}" class="btn btn-primary">Logout</a>
+            </div>
+        </div>
+    </nav>
+</th-block> 
+    <main class="container">
+        <section class="title row">
+            <div class="col-12">
+                <h1 class="text-center fw-bold mb-3">
+                    Benvenuto in Ticket Platform!
+                </h1>
+            </div>
+        </section>
+        <section class="container mt-5 pt-5 align-items-center">
+        <div class="mt-4 mx-auto d-flex flex-column gap-3 pt-5 align-items-center col-6">
+            <div sec:authorize="hasAuthority('OPERATOR')">
+                <a href="/profile"><button type="button" class="btn btn-primary btn-lg text-center">Il tuo profilo</button></a>
+                <a href="/tickets"><button type="button" class="btn btn-primary btn-lg text-center">I tuoi Ticket</button></a>
+            </div>
+            <div sec:authorize="hasAuthority('ADMIN')">
+                <a href="/tickets"><button type="button" class="btn btn-primary btn-lg text-center">Gestisci Ticket</button></a>
+            </div>
+        </div>
+    </section>
+    </main>
 </body>
 </html>

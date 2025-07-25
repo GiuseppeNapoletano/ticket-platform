@@ -12,7 +12,13 @@
                         <a class="nav-link" th:href="@{/}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/tickets}">Tickets</a>
+                        <a class="nav-link" sec:authorize="hasAuthority('OPERATOR')" th:href="@{/profile}">Il mio Profilo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" sec:authorize="hasAuthority('OPERATOR')" th:href="@{/tickets}">I miei Ticket</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" sec:authorize="hasAuthority('ADMIN')" th:href="@{/tickets}">Gestisci Ticket</a>
                     </li>
                 </ul>
             </div>

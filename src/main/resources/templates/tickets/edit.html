@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Nuovo Ticket')}" />
+
+<body>
+    <header>
+        <nav th:replace="~{fragments/navbar :: navbar('Tickets-platform')}" />
+    </header>
+
+    <main class="container">
+        <section class="upper row">
+            <div class="col-12 text-center">
+                <h1 class="fw-bold">
+                    Modifica Ticket
+                </h1>
+            </div>
+        </section>
+        <section class="tickets-content">
+            <div class="col-12">
+                <h2 class="text-center mb-3">
+                    Stai modificando un ticket
+                </h2>
+            </div>
+
+            <div class="col-12">
+                <form th:action="@{/tickets/{id}(id=${ticket.id})}" method="POST" th:object="${ticket}">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Titolo:</label>
+                        <input type="text" class="form-control" id="title" th:field="*{title}"
+                            th:errorClass="is-invalid" required>
+
+                        <div th:if="${#fields.hasErrors('title')}" class="invalid-feedback">
+                            <ul>
+                                <li th:each="error : ${#fields.errors('title')}" th:text="${error}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descrizione:</label>
+                        <textarea type="text" class="form-control" id="description" th:field="*{description}" rows="4"
+                            th:errorClass="is-invalid" required></textarea>
+
+                        <div th:if="${#fields.hasErrors('description')}" class="invalid-feedback">
+                            <ul>
+                                <li th:each="error : ${#fields.errors('description')}" th:text="${error}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Stato:</label>
+                        <select class="form-select" th:field="*{status}">
+                            <option th:value="to_do">Da fare</option>
+                            <option th:value="in_progress">In corso</option>
+                            <option th:value="done">Completato</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Categoria</label>
+                        <select class="form-select" th:field="*{category.id}">
+                            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="user" class="form-label">Operatore:</label>
+                        <select class="form-select" th:field="*{user.id}">
+                            <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <button class="btn btn-primary" type="submit">Aggiorna ticket</button>
+                        <button class="btn btn-warning" type="reset">Resetta i campi</button>
+                    </div>
+                </form>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>

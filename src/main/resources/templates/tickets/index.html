@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Ticket')}" />
+
+<body>
+    <header>
+        <nav th:replace="~{fragments/navbar :: navbar('Tickets-platform')}" />
+    </header>
+    <section class="title row">
+        <div class="col-12 ">
+            <h1 class="text-center fw-bold mb-3">
+                <span th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">Gestisci Ticket</span>
+                <span th:if="${#authorization.expression('hasAuthority(''OPERATOR'')')}">I tuoi Ticket</span>
+            </h1>
+        </div>
+    </section>
+    <section class="search-bar row justify-content-center mb-3">
+        <form th:action="@{/tickets}" method="GET" class="col-10 d-flex align-items-center justify-content-between">
+            <div class="order-1 me-auto" style="min-width: 200px;">
+                <div th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                    <a th:href="@{/tickets/create}" class="btn btn-primary">Crea un nuovo ticket</a>
+                </div>
+                <div th:unless="${#authorization.expression('hasAuthority(''ADMIN'')')}" style="visibility: hidden;">
+                    <a class="btn btn-primary invisible"></a>
+                </div>
+            </div>
+            <div class="input-group w-25 order-2 ms-auto">
+                <input type="search" name="keyword" id="ticket-search-input" class="form-control">
+                <button class="btn btn-primary" type="submit">Cerca</button>
+            </div>
+        </form>
+    </section>
+
+    <main class="container justify-content-center col-12">
+        <table class="table table-striped">
+            <thead class="table-warning">
+                <tr>
+                    <th>ID</th>
+                    <th>Titolo</th>
+                    <th>Descrizione</th>
+                    <th>Stato</th>
+                    <th>Categoria</th>
+                    <th>Operatore</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ticket : ${tickets}" th:object="${ticket}">
+                    <td th:text="*{id}"></td>
+                    <td th:text="*{title}"></td>
+                    <td th:text="*{description}"></td>
+                    <td th:text="*{status}"></td>
+                    <td th:text="*{category?.name}"></td>
+                    <td th:text="*{user?.username}"></td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <a th:href="@{/tickets/{id}(id=*{id})}" class="btn btn-primary btn-sm">Dettagli</a>
+                            <div sec:authorize="hasAuthority('ADMIN')">
+                                <a th:href="@{/tickets/{id}/edit(id=*{id})}" class="btn btn-warning btn-sm">Modifica</a>
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                    th:data-bs-target="'#delete-modal-' + *{id}">
+                                    Elimina
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal fade" th:id="'delete-modal-' + *{id}" data-bs-backdrop="static"
+                            data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Eliminazione di
+                                            <strong>"[[*{title}]]"</strong>
+                                        </h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            Sei sicuro di voler eliminare
+                                            <strong>"[[*{title}]]"</strong>?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Chiudi</button>
+                                        <form th:action="@{|/tickets/*{id}/delete|}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn">Elimina</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+
+    <th:block th:replace="~{fragments/footer :: footer}"></th:block>
+    <th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+</body>
+
+</html>
