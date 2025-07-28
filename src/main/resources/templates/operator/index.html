@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Ticket')}" />
+
+<body>
+    <header>
+        <nav th:replace="~{fragments/navbar :: navbar('Tickets-platform')}" />
+    </header>
+    <section class="title row">
+        <div class="col-12 ">
+            <h1 class="text-center fw-bold mb-3">
+                I tuoi Ticket
+            </h1>
+        </div>
+    </section>
+    <main class="container justify-content-center col-12">
+        <table class="table table-striped">
+            <thead class="table-warning">
+                <tr>
+                    <th>ID</th>
+                    <th>Titolo</th>
+                    <th>Descrizione</th>
+                    <th>Categoria</th>
+                    <th>Operatore</th>
+                    <th>Stato</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ticket : ${tickets}" th:object="${ticket}">
+                    <td th:text="*{id}"></td>
+                    <td th:text="*{title}"></td>
+                    <td th:text="*{description}"></td>
+                    <td th:text="*{category?.name}"></td>
+                    <td th:text="*{user?.username}"></td>
+                    <td>
+                        <form th:action="@{'/operator/tickets/' + *{id}}" method="post" style="display:flex;gap:4px;">
+                            <select class="form-select form-select-sm" name="status" style="width:auto;">
+                                <option th:value="to_do" th:selected="*{status.name() == 'to_do'}">
+                                    Da fare
+                                </option>
+                                <option th:value="in_progress" th:selected="*{status.name() == 'in_progress'}">
+                                    In corso
+                                </option>
+                                <option th:value="done" th:selected="*{status.name() == 'done'}">
+                                    Completato
+                                </option>
+                            </select>
+                            <button type="submit" class="bs-body-color btn-sm">Salva</button>
+                        </form>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <a th:href="@{/operator/tickets/{id}(id=*{id})}" class="btn btn-primary btn-sm">Dettagli</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+
+    <th:block th:replace="~{fragments/footer :: footer}"></th:block>
+    <th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+</body>
+
+</html>

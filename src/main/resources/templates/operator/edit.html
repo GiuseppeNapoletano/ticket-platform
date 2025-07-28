@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Modifica Profilo')}" />
+
+<body>
+    <header>
+        <nav th:replace="~{fragments/navbar :: navbar('Tickets-platform')}" />
+    </header>
+
+    <main class="container">
+        <section class="upper row">
+            <div class="col-12 text-center">
+                <h1 class="fw-bold">
+                    Modifica Profilo
+                </h1>
+            </div>
+        </section>
+        <section class="profile-content">
+            <div class="col-12">
+                <h2 class="text-center mb-3">
+                    Stai modificando il tuo profilo
+                </h2>
+            </div>
+
+            <div class="col-12">
+                <form th:action="@{/operator/profile}" method="POST" th:object="${user}">
+                    <input type="hidden" th:field="*{id}" />
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username:</label>
+                        <input type="text" class="form-control" id="username" th:field="*{username}"
+                            th:errorClass="is-invalid" required>
+
+                        <div th:if="${#fields.hasErrors('username')}" class="invalid-feedback">
+                            <ul>
+                                <li th:each="error : ${#fields.errors('username')}" th:text="${error}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <textarea type="text" class="form-control" id="email" th:field="*{email}" rows="4"
+                            th:errorClass="is-invalid" required></textarea>
+
+                        <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                            <ul>
+                                <li th:each="error : ${#fields.errors('email')}" th:text="${error}"></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <input type="hidden" th:field="*{password}" />
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Stato:</label>
+                        <select class="form-select" th:field="*{status}">
+                            <option th:value="Active">Attivo</option>
+                            <option th:value="Non_active">Non attivo</option>
+                        </select>
+                        <div th:if="${ticketError}" class="alert alert-danger mt-2">
+                            <p th:text="${ticketError}"></p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button class="btn btn-primary" type="submit">Aggiorna Profilo</button>
+                        <button class="btn btn-warning" type="reset">Resetta i campi</button>
+                    </div>
+                </form>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>

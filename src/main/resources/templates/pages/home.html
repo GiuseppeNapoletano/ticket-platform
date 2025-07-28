@@ -29,11 +29,14 @@
         <section class="container mt-5 pt-5 align-items-center">
         <div class="mt-4 mx-auto d-flex flex-column gap-3 pt-5 align-items-center col-6">
             <div sec:authorize="hasAuthority('OPERATOR')">
-                <a href="/profile"><button type="button" class="btn btn-primary btn-lg text-center">Il tuo profilo</button></a>
-                <a href="/tickets"><button type="button" class="btn btn-primary btn-lg text-center">I tuoi Ticket</button></a>
+                <a href="operator/profile"><button type="button" class="btn btn-primary btn-lg text-center">Il tuo profilo</button></a>
+                <a href="operator/tickets"><button type="button" class="btn btn-primary btn-lg text-center">I tuoi Ticket</button></a>
             </div>
             <div sec:authorize="hasAuthority('ADMIN')">
-                <a href="/tickets"><button type="button" class="btn btn-primary btn-lg text-center">Gestisci Ticket</button></a>
+                <a href="admin/tickets"><button type="button" class="btn btn-primary btn-lg text-center">Gestisci Ticket</button></a>
+            </div>
+            <div sec:authorize="hasAuthority('ADMIN')">
+                <a href="admin/addoperator"><button type="button" class="btn btn-primary btn-lg text-center">Gestisci Utenti</button></a>
             </div>
         </div>
     </section>

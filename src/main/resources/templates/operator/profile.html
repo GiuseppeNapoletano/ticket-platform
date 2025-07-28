@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il mio Profilo</title>
+    <th:block th:replace="~{fragments/head :: head('Il mio Profilo')}">
+    </th:block>
+</head>
+
+<body>
+    <header>
+        <nav th:replace="~{ fragments/navbar :: navbar('Il mio Profilo') }"></nav>
+    </header>
+
+    <main class="container">
+        <section class="row upper">
+            <div class="col-12 p-5 mb-3 text-center">
+                <h1>Il mio Profilo</h1>
+            </div>
+        </section>
+        <section class="row user-viewer justify-content-center">
+            <div class="col-8" th:object="${user}">
+                <article class="card">
+                    <h2 class="card-header">Scheda Profilo</h5>
+                        <div class="card-body">
+                            <p><strong>Username:</strong> <span>[[*{username}]]</span></p>
+                            <p><strong>Email:</strong> <span>[[*{email}]]</span></p>
+                            <p><strong>Ruolo:</strong> <span sec:authentication="principal.authorities" class="me-3">
+                            </p>
+                            <p><strong>Stato:</strong>
+                                <span th:if="*{status.name() == 'Active'}">Attivo</span>
+                                <span th:if="*{status.name() == 'Non_active'}">Non attivo</span>
+                            </p>
+                            <a th:href="@{/operator/profile/edit}" class="btn btn-primary">Modifica Profilo</a>
+                        </div>
+                </article>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

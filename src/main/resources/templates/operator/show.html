@@ -28,8 +28,12 @@
                             <p><strong>Descrizione:</strong> <span>[[*{description}]]</span></p>
                             <p><strong>Categoria:</strong> <span>[[*{category?.name}]]</span></p>
                             <p><strong>Operatore:</strong> <span>[[*{user?.username}]]</span></p>
-                            <p><strong>Stato:</strong> <span>[[*{status}]]</span></p>
-                            <a th:href="@{/tickets}" class="btn btn-primary">Indietro</a>
+                            <p><strong>Stato:</strong>
+                                <span th:if="*{status.name() == 'to_do'}">Da fare</span>
+                                <span th:if="*{status.name() == 'in_progress'}">In corso</span>
+                                <span th:if="*{status.name() == 'done'}">Completato</span>
+                            </p>
+                            <a th:href="@{/operator/tickets}" class="btn btn-primary">Indietro</a>
                         </div>
                 </article>
             </div>

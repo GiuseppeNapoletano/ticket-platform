@@ -3,8 +3,10 @@ package org.java.milestone.ticket_platform.controller;
 import java.util.List;
 
 import org.java.milestone.ticket_platform.model.Ticket;
+import org.java.milestone.ticket_platform.model.User;
 import org.java.milestone.ticket_platform.model.User.UserStatus;
 import org.java.milestone.ticket_platform.repository.CategoryRepository;
+import org.java.milestone.ticket_platform.repository.RoleRepository;
 import org.java.milestone.ticket_platform.repository.TicketRepository;
 import org.java.milestone.ticket_platform.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/tickets")
-public class TicketController {
+@RequestMapping("/admin")
+public class AdminController {
+
+    private final RoleRepository roleRepository;
 
     private final CategoryRepository categoryRepository;
 
@@ -32,12 +36,13 @@ public class TicketController {
     @Autowired
     private TicketRepository ticketRepository;
 
-    TicketController(UserRepository userRepository, CategoryRepository categoryRepository) {
+    AdminController(UserRepository userRepository, CategoryRepository categoryRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.roleRepository = roleRepository;
     }
 
-    @GetMapping
+    @GetMapping("/tickets")
     public String index(Authentication authentication, Model model, @RequestParam( name = "keyword", required = false) String keyword){
         List<Ticket> tickets;
         if ( keyword != null && !keyword.isEmpty()){
@@ -46,58 +51,76 @@ public class TicketController {
             tickets = ticketRepository.findAll();
         }
         model.addAttribute("tickets", tickets);
-        return "tickets/index";
+        return "admin/index";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("tickets/{id}")
     public String show(@PathVariable Integer id, Model model) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket non trovato con id: " + id));
         model.addAttribute("ticket", ticket);
-        return "tickets/show"; 
+        return "admin/show"; 
     }
 
-    @GetMapping("/create")
+    @GetMapping("tickets/create")
     public String create(Model model){
         model.addAttribute("ticket", new Ticket());
         model.addAttribute("users", userRepository.findByRolesNameAndStatus("OPERATOR", UserStatus.Active));
         model.addAttribute("categories", categoryRepository.findAll());
-        return "tickets/create";
+        return "admin/create";
     }
 
-    @PostMapping
+    @PostMapping("tickets/create")
     public String store( @Valid @ModelAttribute("ticket") Ticket formTicket, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
-            return "tickets/create";
+            return "admin/tickets/create";
         }
         ticketRepository.save(formTicket);
-        return "redirect:/tickets";
+        return "redirect:/admin/tickets";
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("tickets/{id}/edit")
     public String edit(@PathVariable Integer id, Model model){
         model.addAttribute("ticket", ticketRepository.findById(id).get());
         model.addAttribute("users", userRepository.findByRolesNameAndStatus("OPERATOR", UserStatus.Active));
         model.addAttribute("categories", categoryRepository.findAll());
-        return "tickets/edit";
+        return "admin/edit";
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("tickets/{id}")
     public String update(@PathVariable Integer id, @Valid @ModelAttribute("ticket") Ticket formTicket, BindingResult bindingResult){
 
         if (bindingResult.hasErrors()){
-            return "tickets/edit";
+            return "admin/tickets/edit";
         }
 
         ticketRepository.save(formTicket);
-        return "redirect:/tickets";
+        return "redirect:/admin/tickets";
     }
 
-    @PostMapping("/{id}/delete")
+    @PostMapping("tickets/{id}/delete")
     public String delete(@PathVariable("id") Integer id, Model model){
 
         Ticket ticketToDelete = ticketRepository.findById(id).get();
         ticketRepository.delete(ticketToDelete);
-         return "redirect:/tickets";
+         return "redirect:/admin/tickets";
     }
+
+    @GetMapping("addoperator")
+    public String createOperator(Model model){
+        model.addAttribute("users", new User());
+        model.addAttribute("roles", roleRepository.findAll());
+        return "admin/add_operator";
+    }
+
+    @PostMapping("addoperator")
+    public String storeOperator( @Valid @ModelAttribute("users") User formUser, BindingResult bindingResult){
+        if (bindingResult.hasErrors()){
+            return "admin/addoperator";
+        }
+        formUser.setPassword("{noop}" + formUser.getPassword());
+        userRepository.save(formUser);
+        return "redirect:/admin/tickets";
+    }
+
 }

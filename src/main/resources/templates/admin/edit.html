@@ -24,7 +24,7 @@
             </div>
 
             <div class="col-12">
-                <form th:action="@{/tickets/{id}(id=${ticket.id})}" method="POST" th:object="${ticket}">
+                <form th:action="@{/admin/tickets/{id}(id=${ticket.id})}" method="POST" th:object="${ticket}">
                     <div class="mb-3">
                         <label for="title" class="form-label">Titolo:</label>
                         <input type="text" class="form-control" id="title" th:field="*{title}"

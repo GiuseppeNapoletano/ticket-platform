@@ -2,7 +2,6 @@ package org.java.milestone.ticket_platform.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,9 +18,8 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(requests -> requests
-                .requestMatchers("/tickets/create", "/tickets/edit/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/tickets/**").hasAuthority("ADMIN")
-                .requestMatchers("/tickets", "/tickets/**").hasAnyAuthority("OPERATOR", "ADMIN")
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers("/operator/**").hasAuthority("OPERATOR")
                 .requestMatchers("/**").permitAll())
                 .formLogin(Customizer.withDefaults());
         return http.build();

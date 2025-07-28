@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Nuovo Operatore')}" />
+
+<body>
+    <header>
+        <nav th:replace="~{fragments/navbar :: navbar('Tickets-platform')}" />
+    </header>
+
+    <main class="container">
+        <section class="upper row">
+            <div class="col-12 text-center">
+                <h1 class="fw-bold">
+                    Creazione Operatore
+                </h1>
+            </div>
+        </section>
+        <section class="operator-content">
+            <div class="col-12">
+                <h2 class="text-center mb-3">
+                    Stai creando un nuovo operatore
+                </h2>
+            </div>
+
+            <div class="col-12">
+                <form th:action="@{/admin/addoperator}" method="POST" th:object="${users}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username:</label>
+                        <input type="text" class="form-control" id="username" th:field="*{username}"
+                            th:errorClass="is-invalid" required>
+
+                        <div th:if="${#fields.hasErrors('username')}" class="invalid-feedback">
+                            <ul>
+                                <li th:each="error : ${#fields.errors('username')}" th:text="${error}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="text" class="form-control" id="password" th:field="*{password}"
+                            th:errorClass="is-invalid" required>
+
+                        <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback">
+                            <ul>
+                                <li th:each="error : ${#fields.errors('password')}" th:text="${error}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="text" class="form-control" id="email" th:field="*{email}" rows="4"
+                            th:errorClass="is-invalid" required></input>
+
+                        <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                            <ul>
+                                <li th:each="error : ${#fields.errors('email')}" th:text="${error}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="roles" class="form-label">Ruolo:</label>
+                        <select class="form-select" th:field="*{roles}">
+                            <option th:each="role : ${roles}" th:if="${role.name == 'OPERATOR'}" th:value="${role.id}" th:text="${role.name}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Stato:</label>
+                        <select class="form-select" th:field="*{status}">
+                            <option th:value="Active">Attivo</option>
+                            <option th:value="Non_active">Non attivo</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <button class="btn btn-primary" type="submit">Aggiungi operatore</button>
+                        <button class="btn btn-warning" type="reset">Resetta i campi</button>
+                    </div>
+                </form>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>
