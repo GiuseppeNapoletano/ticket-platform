@@ -23,6 +23,9 @@
                     <li class="nav-item">
                         <a class="nav-link" sec:authorize="hasAuthority('ADMIN')" th:href="@{/admin/addoperator}">Gestisci Utenti</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" sec:authorize="hasAuthority('ADMIN')" th:href="@{/admin/categories}">Gestisci Categorie</a>
+                    </li>
                 </ul>
             </div>
             <div class="user-details">

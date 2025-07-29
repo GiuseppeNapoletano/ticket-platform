@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: head('Ticket')}" />
+<head th:replace="~{fragments/head :: head('Category')}" />
 
 <body>
     <header>
@@ -10,19 +10,15 @@
     <section class="title row">
         <div class="col-12 ">
             <h1 class="text-center fw-bold mb-3">
-                Gestisci Ticket
+                Gestisci Categorie
             </h1>
         </div>
     </section>
     <section class="search-bar row justify-content-center mb-3">
-        <form th:action="@{/admin/tickets}" method="GET"
+        <form th:action="@{/admin/categories}" method="GET"
             class="col-10 d-flex align-items-center justify-content-between">
             <div class="order-1 me-auto" style="min-width: 200px;">
-                <a th:href="@{/admin/tickets/create}" class="btn btn-primary">Crea un nuovo ticket</a>
-            </div>
-            <div class="input-group w-25 order-2 ms-auto">
-                <input type="search" name="keyword" id="ticket-search-input" class="form-control">
-                <button class="btn btn-primary" type="submit">Cerca</button>
+                <a th:href="@{/admin/categories/create}" class="btn btn-primary">Crea una nuova categoria</a>
             </div>
         </form>
     </section>
@@ -31,32 +27,17 @@
             <thead class="table-warning">
                 <tr>
                     <th>ID</th>
-                    <th>Titolo</th>
-                    <th>Descrizione</th>
-                    <th>Stato</th>
-                    <th>Categoria</th>
-                    <th>Operatore</th>
+                    <th>Nome</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="ticket : ${tickets}" th:object="${ticket}">
+                <tr th:each="category : ${categories}" th:object="${category}">
                     <td th:text="*{id}"></td>
-                    <td th:text="*{title}"></td>
-                    <td th:text="*{description}"></td>
-                    <td>
-                        <span th:if="*{status.name() == 'to_do'}">Da fare</span>
-                        <span th:if="*{status.name() == 'in_progress'}">In corso</span>
-                        <span th:if="*{status.name() == 'done'}">Completato</span>
-                    </td>
-                    <td th:text="*{category?.name}"></td>
-                    <td th:text="*{user?.username}"></td>
+                    <td th:text="*{name}"></td>
                     <td>
                         <div class="d-flex flex-wrap gap-2 align-items-center">
-                            <a th:href="@{/admin/tickets/{id}(id=*{id})}" class="btn btn-primary btn-sm">Dettagli</a>
                             <div sec:authorize="hasAuthority('ADMIN')">
-                                <a th:href="@{/admin/tickets/{id}/edit(id=*{id})}"
-                                    class="btn btn-warning btn-sm">Modifica</a>
                                 <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                     th:data-bs-target="'#delete-modal-' + *{id}">
                                     Elimina
@@ -70,7 +51,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title fs-5" id="staticBackdropLabel">Eliminazione di
-                                            <strong>"[[*{title}]]"</strong>
+                                            <strong>"[[*{name}]]"</strong>
                                         </h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
@@ -78,13 +59,13 @@
                                     <div class="modal-body">
                                         <p>
                                             Sei sicuro di voler eliminare
-                                            <strong>"[[*{title}]]"</strong>?
+                                            <strong>"[[*{name}]]"</strong>?
                                         </p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Chiudi</button>
-                                        <form th:action="@{|/admin/tickets/*{id}/delete|}" method="post"
+                                        <form th:action="@{|/admin/categories/*{id}/delete|}" method="post"
                                             class="d-inline">
                                             <button type="submit" class="btn btn-danger btn">Elimina</button>
                                         </form>

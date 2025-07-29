@@ -2,6 +2,7 @@ package org.java.milestone.ticket_platform.controller;
 
 import java.util.List;
 
+import org.java.milestone.ticket_platform.model.Category;
 import org.java.milestone.ticket_platform.model.Ticket;
 import org.java.milestone.ticket_platform.model.User;
 import org.java.milestone.ticket_platform.model.User.UserStatus;
@@ -54,7 +55,7 @@ public class AdminController {
         return "admin/index";
     }
 
-    @GetMapping("tickets/{id}")
+    @GetMapping("/tickets/{id}")
     public String show(@PathVariable Integer id, Model model) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket non trovato con id: " + id));
@@ -62,7 +63,7 @@ public class AdminController {
         return "admin/show"; 
     }
 
-    @GetMapping("tickets/create")
+    @GetMapping("/tickets/create")
     public String create(Model model){
         model.addAttribute("ticket", new Ticket());
         model.addAttribute("users", userRepository.findByRolesNameAndStatus("OPERATOR", UserStatus.Active));
@@ -70,7 +71,7 @@ public class AdminController {
         return "admin/create";
     }
 
-    @PostMapping("tickets/create")
+    @PostMapping("/tickets/create")
     public String store( @Valid @ModelAttribute("ticket") Ticket formTicket, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             return "admin/tickets/create";
@@ -79,7 +80,7 @@ public class AdminController {
         return "redirect:/admin/tickets";
     }
 
-    @GetMapping("tickets/{id}/edit")
+    @GetMapping("/tickets/{id}/edit")
     public String edit(@PathVariable Integer id, Model model){
         model.addAttribute("ticket", ticketRepository.findById(id).get());
         model.addAttribute("users", userRepository.findByRolesNameAndStatus("OPERATOR", UserStatus.Active));
@@ -87,7 +88,7 @@ public class AdminController {
         return "admin/edit";
     }
 
-    @PostMapping("tickets/{id}")
+    @PostMapping("/tickets/{id}")
     public String update(@PathVariable Integer id, @Valid @ModelAttribute("ticket") Ticket formTicket, BindingResult bindingResult){
 
         if (bindingResult.hasErrors()){
@@ -106,14 +107,14 @@ public class AdminController {
          return "redirect:/admin/tickets";
     }
 
-    @GetMapping("addoperator")
+    @GetMapping("/addoperator")
     public String createOperator(Model model){
         model.addAttribute("users", new User());
         model.addAttribute("roles", roleRepository.findAll());
         return "admin/add_operator";
     }
 
-    @PostMapping("addoperator")
+    @PostMapping("/addoperator")
     public String storeOperator( @Valid @ModelAttribute("users") User formUser, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             return "admin/addoperator";
@@ -123,4 +124,34 @@ public class AdminController {
         return "redirect:/admin/tickets";
     }
 
+    @GetMapping("/categories")
+    public String category(Model model) {
+        List<Category> categories = categoryRepository.findAll();
+        model.addAttribute("categories", categories);
+        return "admin/category";
+    }
+
+    @GetMapping("/categories/create")
+    public String createCategory(Model model) {
+        List<Category> categories = categoryRepository.findAll();
+        model.addAttribute("category", new Category());
+        model.addAttribute("categories", categories);
+        return "admin/add_category";
+    }
+
+    @PostMapping("/categories")
+    public String newCategory(@Valid @ModelAttribute("category") Category formCategory, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryRepository.findAll());
+            return "admin/add_category";
+        }
+        categoryRepository.save(formCategory);
+        return "redirect:/admin/categories";
+    }
+
+    @PostMapping("/categories/{id}/delete")
+    public String deleteCategory(@PathVariable("id") Integer id) {
+        categoryRepository.deleteById(id);
+        return "redirect:/admin/categories";
+    }
 }

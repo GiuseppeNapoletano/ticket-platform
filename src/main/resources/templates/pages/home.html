@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head th:replace="~{fragments/head :: head('Tickets')}" />
+
 <body>
     <th-block th:fragment="navbar(title)">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand">Boolean</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="user-details">
-                Logged user: <span sec:authentication="name" class="me-3"></span>
-                Roles: <span sec:authentication="principal.authorities" class="me-3"></span>
-                <a th:href="@{/logout}" class="btn btn-primary">Logout</a>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand">Boolean</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="user-details">
+                    Logged user: <span sec:authentication="name" class="me-3"></span>
+                    Roles: <span sec:authentication="principal.authorities" class="me-3"></span>
+                    <a th:href="@{/logout}" class="btn btn-primary">Logout</a>
+                </div>
             </div>
-        </div>
-    </nav>
-</th-block> 
+        </nav>
+    </th-block>
     <main class="container">
         <section class="title row">
             <div class="col-12">
@@ -26,20 +28,41 @@
                 </h1>
             </div>
         </section>
-        <section class="container mt-5 pt-5 align-items-center">
-        <div class="mt-4 mx-auto d-flex flex-column gap-3 pt-5 align-items-center col-6">
-            <div sec:authorize="hasAuthority('OPERATOR')">
-                <a href="operator/profile"><button type="button" class="btn btn-primary btn-lg text-center">Il tuo profilo</button></a>
-                <a href="operator/tickets"><button type="button" class="btn btn-primary btn-lg text-center">I tuoi Ticket</button></a>
+        <section class="container mt-5 pt-5 d-flex justify-content-center">
+            <div class="mt-4 pt-5 d-flex flex-column gap-2 align-items-center col-12 col-md-6">
+                <div sec:authorize="hasAuthority('OPERATOR')" class="w-75">
+                    <div class="mb-2">
+                        <a href="/operator/profile" class="w-100">
+                            <button type="button" class="btn btn-primary btn w-100">Il tuo profilo</button>
+                        </a>
+                    </div>
+                    <div class="mb-2">
+                        <a href="/operator/tickets" class="w-100">
+                            <button type="button" class="btn btn-primary btn w-100">I tuoi Ticket</button>
+                        </a>
+                    </div>
+                </div>
+                <div sec:authorize="hasAuthority('ADMIN')" class="w-75">
+                    <div class="mb-2">
+                        <a href="/admin/tickets" class="w-100">
+                            <button type="button" class="btn btn-primary btn w-100">Gestisci Ticket</button>
+                        </a>
+                    </div>
+                    <div class="mb-2">
+                        <a href="/admin/addoperator" class="w-100">
+                            <button type="button" class="btn btn-primary btn w-100">Gestisci Utenti</button>
+                        </a>
+                    </div>
+                    <div class="mb-2">
+                        <a href="/admin/categories" class="w-100">
+                            <button type="button" class="btn btn-primary btn w-100">Gestisci Categorie</button>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div sec:authorize="hasAuthority('ADMIN')">
-                <a href="admin/tickets"><button type="button" class="btn btn-primary btn-lg text-center">Gestisci Ticket</button></a>
-            </div>
-            <div sec:authorize="hasAuthority('ADMIN')">
-                <a href="admin/addoperator"><button type="button" class="btn btn-primary btn-lg text-center">Gestisci Utenti</button></a>
-            </div>
-        </div>
-    </section>
+        </section>
+
     </main>
 </body>
+
 </html>

@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     public List<Ticket> findByTitleContainingIgnoreCase(String title);
     List<Ticket> findByUser(User user);
+    List<Ticket> findByUserId(Integer userId);
+    List<Ticket> findByTitleContainingIgnoreCaseAndUserId(String title, Integer userId);
 }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Nuova Categoria')}" />
+
+<body>
+    <header>
+        <nav th:replace="~{fragments/navbar :: navbar('Tickets-platform')}" />
+    </header>
+
+    <main class="container">
+        <section class="upper row">
+            <div class="col-12 text-center">
+                <h1 class="fw-bold">
+                    Creazione Categoria
+                </h1>
+            </div>
+        </section>
+        <section class="operator-content">
+            <div class="col-12">
+                <h2 class="text-center mb-3">
+                    Stai creando una nuova categoria
+                </h2>
+            </div>
+
+            <div class="col-12">
+                <form th:action="@{/admin/categories}" method="POST" th:object="${category}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nome:</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}"
+                            th:errorClass="is-invalid" required>
+
+                        <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback">
+                            <ul>
+                                <li th:each="error : ${#fields.errors('name')}" th:text="${error}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button class="btn btn-primary" type="submit">Aggiungi categoria</button>
+                        <button class="btn btn-warning" type="reset">Resetta i campi</button>
+                    </div>
+                </form>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>

@@ -38,11 +38,14 @@ public class OperatorController {
     @GetMapping("/tickets")
     public String index(Authentication authentication, Model model,
             @RequestParam(name = "keyword", required = false) String keyword) {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato"));
         List<Ticket> tickets;
         if (keyword != null && !keyword.isEmpty()) {
-            tickets = ticketRepository.findByTitleContainingIgnoreCase(keyword);
+            tickets = ticketRepository.findByTitleContainingIgnoreCaseAndUserId(keyword, user.getId());
         } else {
-            tickets = ticketRepository.findAll();
+            tickets = ticketRepository.findByUserId(user.getId());
         }
         model.addAttribute("tickets", tickets);
         return "operator/index";
@@ -91,7 +94,8 @@ public class OperatorController {
 
         if (user.getStatus() == User.UserStatus.Active && formUser.getStatus() == User.UserStatus.Non_active) {
             boolean hasOpenTickets = user.getTickets().stream()
-                    .anyMatch(t -> t.getStatus() == Ticket.TicketStatus.to_do || t.getStatus() == Ticket.TicketStatus.in_progress);
+                    .anyMatch(t -> t.getStatus() == Ticket.TicketStatus.to_do
+                            || t.getStatus() == Ticket.TicketStatus.in_progress);
 
             if (hasOpenTickets) {
                 model.addAttribute("user", formUser);
