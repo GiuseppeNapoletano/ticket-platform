@@ -23,7 +23,7 @@
         <section class="row ticket-viewer justify-content-center">
             <div class="col-8" th:object="${ticket}">
                 <article class="card">
-                    <h2 class="card-header">[[*{title}]]€</h5>
+                    <h2 class="card-header">[[*{title}]]</h5>
                         <div class="card-body">
                             <p><strong>Descrizione:</strong> <span>[[*{description}]]</span></p>
                             <p><strong>Categoria:</strong> <span>[[*{category?.name}]]</span></p>
@@ -34,6 +34,46 @@
                                 <span th:if="*{status.name() == 'done'}">Completato</span>
                             </p>
                             <a th:href="@{/operator/tickets}" class="btn btn-primary">Indietro</a>
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                data-bs-target="#notesModal">Note</button>
+                            <div class="modal fade" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="notesModalLabel">Note del Ticket</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Chiudi"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div th:each="note : *{notes}">
+                                                <div class="border rounded p-2 mb-3">
+                                                    <p class="mb-3 text-break" style="word-break: break-word;">
+                                                        <span th:text="${note.content}"></span>
+                                                    </p>
+                                                    <div>
+                                                        <strong>Autore:</strong> <span
+                                                            th:text="${note.author}">[Autore]</span><br>
+                                                        <strong>Data:</strong>
+                                                        <span
+                                                            th:text="${#temporals.format(note.createdAt, 'dd/MM/yyyy HH:mm')}">[Data]</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <form th:action="@{/operator/notes/create}" method="post">
+                                                <input type="hidden" th:name="ticketId" th:value="*{id}" />
+                                                <div class="mb-3">
+                                                    <label for="newNote" class="form-label">Nuova nota</label>
+                                                    <textarea class="form-control" id="newNote" name="content" rows="3"
+                                                        required></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-success">Aggiungi Nota</button>
+                                                <button class="btn btn-warning" type="reset">Resetta i campi</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                 </article>
             </div>

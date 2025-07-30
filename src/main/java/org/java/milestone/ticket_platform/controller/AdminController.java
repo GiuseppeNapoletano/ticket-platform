@@ -1,16 +1,20 @@
 package org.java.milestone.ticket_platform.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.java.milestone.ticket_platform.model.Category;
+import org.java.milestone.ticket_platform.model.Note;
 import org.java.milestone.ticket_platform.model.Ticket;
 import org.java.milestone.ticket_platform.model.User;
 import org.java.milestone.ticket_platform.model.User.UserStatus;
 import org.java.milestone.ticket_platform.repository.CategoryRepository;
+import org.java.milestone.ticket_platform.repository.NoteRepository;
 import org.java.milestone.ticket_platform.repository.RoleRepository;
 import org.java.milestone.ticket_platform.repository.TicketRepository;
 import org.java.milestone.ticket_platform.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 
@@ -33,20 +38,25 @@ public class AdminController {
     private final CategoryRepository categoryRepository;
 
     private final UserRepository userRepository;
-    
+
+    @Autowired
+    private NoteRepository noteRepository;
+
     @Autowired
     private TicketRepository ticketRepository;
 
-    AdminController(UserRepository userRepository, CategoryRepository categoryRepository, RoleRepository roleRepository) {
+    AdminController(UserRepository userRepository, CategoryRepository categoryRepository,
+            RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.roleRepository = roleRepository;
     }
 
     @GetMapping("/tickets")
-    public String index(Authentication authentication, Model model, @RequestParam( name = "keyword", required = false) String keyword){
+    public String index(Authentication authentication, Model model,
+            @RequestParam(name = "keyword", required = false) String keyword) {
         List<Ticket> tickets;
-        if ( keyword != null && !keyword.isEmpty()){
+        if (keyword != null && !keyword.isEmpty()) {
             tickets = ticketRepository.findByTitleContainingIgnoreCase(keyword);
         } else {
             tickets = ticketRepository.findAll();
@@ -60,11 +70,11 @@ public class AdminController {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket non trovato con id: " + id));
         model.addAttribute("ticket", ticket);
-        return "admin/show"; 
+        return "admin/show";
     }
 
     @GetMapping("/tickets/create")
-    public String create(Model model){
+    public String create(Model model) {
         model.addAttribute("ticket", new Ticket());
         model.addAttribute("users", userRepository.findByRolesNameAndStatus("OPERATOR", UserStatus.Active));
         model.addAttribute("categories", categoryRepository.findAll());
@@ -72,8 +82,8 @@ public class AdminController {
     }
 
     @PostMapping("/tickets/create")
-    public String store( @Valid @ModelAttribute("ticket") Ticket formTicket, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
+    public String store(@Valid @ModelAttribute("ticket") Ticket formTicket, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             return "admin/tickets/create";
         }
         ticketRepository.save(formTicket);
@@ -81,7 +91,7 @@ public class AdminController {
     }
 
     @GetMapping("/tickets/{id}/edit")
-    public String edit(@PathVariable Integer id, Model model){
+    public String edit(@PathVariable Integer id, Model model) {
         model.addAttribute("ticket", ticketRepository.findById(id).get());
         model.addAttribute("users", userRepository.findByRolesNameAndStatus("OPERATOR", UserStatus.Active));
         model.addAttribute("categories", categoryRepository.findAll());
@@ -89,9 +99,10 @@ public class AdminController {
     }
 
     @PostMapping("/tickets/{id}")
-    public String update(@PathVariable Integer id, @Valid @ModelAttribute("ticket") Ticket formTicket, BindingResult bindingResult){
+    public String update(@PathVariable Integer id, @Valid @ModelAttribute("ticket") Ticket formTicket,
+            BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return "admin/tickets/edit";
         }
 
@@ -100,23 +111,23 @@ public class AdminController {
     }
 
     @PostMapping("tickets/{id}/delete")
-    public String delete(@PathVariable("id") Integer id, Model model){
+    public String delete(@PathVariable("id") Integer id, Model model) {
 
         Ticket ticketToDelete = ticketRepository.findById(id).get();
         ticketRepository.delete(ticketToDelete);
-         return "redirect:/admin/tickets";
+        return "redirect:/admin/tickets";
     }
 
     @GetMapping("/addoperator")
-    public String createOperator(Model model){
+    public String createOperator(Model model) {
         model.addAttribute("users", new User());
         model.addAttribute("roles", roleRepository.findAll());
         return "admin/add_operator";
     }
 
     @PostMapping("/addoperator")
-    public String storeOperator( @Valid @ModelAttribute("users") User formUser, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
+    public String storeOperator(@Valid @ModelAttribute("users") User formUser, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             return "admin/addoperator";
         }
         formUser.setPassword("{noop}" + formUser.getPassword());
@@ -140,7 +151,8 @@ public class AdminController {
     }
 
     @PostMapping("/categories")
-    public String newCategory(@Valid @ModelAttribute("category") Category formCategory, BindingResult bindingResult, Model model) {
+    public String newCategory(@Valid @ModelAttribute("category") Category formCategory, BindingResult bindingResult,
+            Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryRepository.findAll());
             return "admin/add_category";
@@ -153,5 +165,28 @@ public class AdminController {
     public String deleteCategory(@PathVariable("id") Integer id) {
         categoryRepository.deleteById(id);
         return "redirect:/admin/categories";
+    }
+
+    @PostMapping("/notes/create")
+    public String addNote(@RequestParam("ticketId") Integer ticketId,
+            @RequestParam("content") String content,
+            Authentication authentication) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Note note = new Note();
+        note.setContent(content);
+        note.setTicket(ticket);
+        note.setAuthor(authentication.getName());
+        note.setCreatedAt(LocalDateTime.now());
+        noteRepository.save(note);
+        return "redirect:/admin/tickets/" + ticketId;
+    }
+
+    @PostMapping("/notes/{id}/delete")
+    public String deleteNote(@PathVariable Integer id) {
+        Note note = noteRepository.findById(id).orElseThrow();
+        Integer ticketId = note.getTicket().getId();
+        noteRepository.delete(note);
+        return "redirect:/admin/tickets/" + ticketId;
     }
 }

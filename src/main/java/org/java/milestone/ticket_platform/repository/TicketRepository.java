@@ -11,4 +11,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     List<Ticket> findByUser(User user);
     List<Ticket> findByUserId(Integer userId);
     List<Ticket> findByTitleContainingIgnoreCaseAndUserId(String title, Integer userId);
+    List<Ticket> findByCategoryId(Integer categories_id);
+    List<Ticket> findByStatus(Ticket.TicketStatus status);
 }

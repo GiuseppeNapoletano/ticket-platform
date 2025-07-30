@@ -1,9 +1,12 @@
 package org.java.milestone.ticket_platform.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.java.milestone.ticket_platform.model.Note;
 import org.java.milestone.ticket_platform.model.Ticket;
 import org.java.milestone.ticket_platform.model.User;
+import org.java.milestone.ticket_platform.repository.NoteRepository;
 import org.java.milestone.ticket_platform.repository.TicketRepository;
 import org.java.milestone.ticket_platform.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,9 @@ public class OperatorController {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private NoteRepository noteRepository;
 
     OperatorController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -113,4 +119,18 @@ public class OperatorController {
         return "redirect:/operator/profile";
     }
 
+    @PostMapping("/notes/create")
+    public String addNote(@RequestParam("ticketId") Integer ticketId,
+            @RequestParam("content") String content,
+            Authentication authentication) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Note note = new Note();
+        note.setContent(content);
+        note.setTicket(ticket);
+        note.setAuthor(authentication.getName());
+        note.setCreatedAt(LocalDateTime.now());
+        noteRepository.save(note);
+        return "redirect:/operator/tickets/" + ticketId;
+    }
 }
